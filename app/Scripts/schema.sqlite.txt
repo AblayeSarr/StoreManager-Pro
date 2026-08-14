@@ -1,0 +1,27 @@
+Utilisateur: (id PRIMARY KEY AUTOINCREMENT, nom TEXT NOT NULL, prenom TEXT NOT NULL, email TEXT NOT NULL UNIQUE, mot_de_passe TEXT NOT NULL, role TEXT NOT NULL CHECK (role IN ('administrateur','charge_vente','charge_stock','inventaire')));
+
+Produit: (id INT PRIMARY KEY AUTOINCREMENT, nom TEXT NOT NULL, description TEXT, categorie TEXT NOT NULL, prix NUMERIC NOT NULL CHECK (prix >= 0), seuil_alerte INT NOT NULL DEFAULT 5 CHECK (seuil_alerte >= 0));
+ 
+Stock: (id INT PRIMARY KEY AUTOINCREMENT, produit_id INT NOT NULL UNIQUE REFERENCES produit(id) ON DELETE CASCADE, quantite_disponible INT NOT NULL DEFAULT 0 CHECK (quantite_disponible >= 0), date_mise_a_jour TEXT NOT NULL DEFAULT DATE);
+ 
+Client: (id INT PRIMARY KEY AUTOINCREMENT, nom TEXT NOT NULL, prenom TEXT NOT NULL, telephone TEXT, email TEXT, adresse TEXT);
+
+Fournisseur: (id INT PRIMARY KEY AUTOINCREMENT, nom TEXT NOT NULL, telephone TEXT, email TEXT, adresse TEXT);
+
+Vente: (id INT PRIMARY KEY AUTOINCREMENT, utilisateur_id INT NOT NULL REFERENCES utilisateur(id), client_id INT NOT NULL REFERENCES client(id), date TEXT NOT NULL DEFAULT DATE, montant_total NUMERIC NOT NULL DEFAULT 0 CHECK (montant_total >= 0), statut TEXT NOT NULL DEFAULT 'en_cours' CHECK (statut IN ('en_cours','validee','annulee')));
+
+Ligne_vente: (id INT PRIMARY KEY AUTOINCREMENT, vente_id INT NOT NULL REFERENCES vente(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite INT NOT NULL CHECK (quantite > 0), prix_unitaire NUMERIC NOT NULL CHECK (prix_unitaire >= 0), sous_total NUMERIC NOT NULL CHECK (sous_total >= 0));
+ 
+Paiement: (id INT PRIMARY KEY AUTOINCREMENT, vente_id INT NOT NULL REFERENCES vente(id) ON DELETE CASCADE, date TEXT NOT NULL DEFAULT (datetime('now')), montant NUMERIC NOT NULL CHECK (montant >= 0), mode_paiement TEXT NOT NULL CHECK (mode_paiement IN ('especes','mobile_money','carte','virement','cheque')), statut TEXT NOT NULL DEFAULT 'en_attente' CHECK (statut IN ('en_attente','valide','echoue','rembourse')));
+
+Dette: (id INT PRIMARY KEY AUTOINCREMENT, vente_id INT NOT NULL UNIQUE REFERENCES vente(id), client_id INT NOT NULL REFERENCES client(id), montant NUMERIC NOT NULL CHECK (montant >= 0), montant_restant NUMERIC NOT NULL CHECK (montant_restant >= 0), date TEXT NOT NULL DEFAULT DATE, statut TEXT NOT NULL DEFAULT 'en_cours' CHECK (statut IN ('en_cours','partiellement_remboursee','soldee')));
+ 
+Remboursement: (id INT PRIMARY KEY AUTOINCREMENT, dette_id INT NOT NULL REFERENCES dette(id) ON DELETE CASCADE, montant NUMERIC NOT NULL CHECK (montant > 0), date TEXT NOT NULL DEFAULT DATE);
+ 
+Approvisionnement: (id INT PRIMARY KEY AUTOINCREMENT,utilisateur_id  INTEGER NOT NULL REFERENCES utilisateur(id), fournisseur_id  INTEGER NOT NULL REFERENCES fournisseur(id), date TEXT NOT NULL DEFAULT DATE, montant_total NUMERIC NOT NULL DEFAULT 0 CHECK (montant_total >= 0), statut TEXT NOT NULL DEFAULT 'en_attente' CHECK (statut IN ('en_attente','commande','receptionnee_partielle','receptionnee','annulee')));
+ 
+Ligne_approvisionnement: (id INT PRIMARY KEY AUTOINCREMENT, approvisionnement_id INT NOT NULL REFERENCES approvisionnement(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite INT NOT NULL CHECK (quantite > 0), prix_unitaire NUMERIC NOT NULL CHECK (prix_unitaire >= 0), sous_total NUMERIC NOT NULL CHECK (sous_total >= 0));
+ 
+Inventaire (id INT PRIMARY KEY AUTOINCREMENT, utilisateur_id INT NOT NULL REFERENCES utilisateur(id), date TEXT NOT NULL DEFAULT DATE, statut TEXT NOT NULL DEFAULT 'en_cours' CHECK (statut IN ('en_cours','cloture')));
+ 
+Ligne_inventaire: (id INT PRIMARY KEY AUTOINCREMENT, inventaire_id INT NOT NULL REFERENCES inventaire(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite_theorique  INT NOT NULL CHECK (quantite_theorique >= 0), quantite_reelle INT NOT NULL CHECK (quantite_reelle >= 0), ecart INT NOT NULL);

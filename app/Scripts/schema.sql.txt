@@ -1,0 +1,28 @@
+
+Utilisateur: (id SERIAL PRIMARY KEY, nom VARCHAR(100) NOT NULL, prenom VARCHAR(100) NOT NULL, email VARCHAR(150) NOT NULL UNIQUE, mot_de_passe VARCHAR(100) NOT NULL, role role_utilisateur NOT NULL);
+
+Produit: (id SERIAL PRIMARY KEY, nom VARCHAR(150) NOT NULL, description TEXT, categorie VARCHAR(100) NOT NULL, prix NUMERIC(12,2) NOT NULL CHECK (prix >= 0), seuil_alerte INTEGER NOT NULL DEFAULT 5 CHECK (seuil_alerte >= 0));
+
+Stock: (id SERIAL PRIMARY KEY, produit_id INT NOT NULL UNIQUE REFERENCES produit(id) ON DELETE CASCADE, quantite_disponible INT NOT NULL DEFAULT 0 CHECK (quantite_disponible >= 0), date_mise_a_jour DATE NOT NULL DEFAULT CURRENT DATE);
+
+Client: (id SERIAL PRIMARY KEY, nom VARCHAR(100) NOT NULL, prenom VARCHAR(100) NOT NULL, telephone VARCHAR(30), email VARCHAR(100),adresse VARCHAR(100));
+
+Fournisseur: (id SERIAL PRIMARY KEY, nom VARCHAR(50) NOT NULL, telephone VARCHAR(30), email VARCHAR(100), adresse VARCHAR(100));
+
+Vente: (id SERIAL PRIMARY KEY, utilisateur_id INT NOT NULL REFERENCES utilisateur(id), client_id INT NOT NULL REFERENCES client(id), date DATE NOT NULL, montant_total   NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (montant_total >= 0), statut statut_vente NOT NULL DEFAULT 'en_cours');
+
+Ligne_vente: ( id SERIAL PRIMARY KEY, vente_id INT NOT NULL REFERENCES vente(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite INT NOT NULL CHECK (quantite > 0), prix_unitaire NUMERIC(12,2) NOT NULL CHECK (prix_unitaire >= 0), sous_total NUMERIC(12,2) NOT NULL CHECK (sous_total >= 0));
+
+Paiement: ( id SERIAL PRIMARY KEY, vente_id INT NOT NULL REFERENCES vente(id) ON DELETE CASCADE, date DATE DEFAULT CURRENT DATE, montant NUMERIC(12,2) NOT NULL CHECK (montant >= 0), mode_paiement mode_paiement NOT NULL, statut statut_paiement NOT NULL DEFAULT 'en_attente');
+
+Dette: (id SERIAL PRIMARY KEY, vente_id INT NOT NULL UNIQUE REFERENCES vente(id), client_id INT NOT NULL REFERENCES client(id), montant NUMERIC(12,2) NOT NULL CHECK (montant >= 0), montant_restant NUMERIC(12,2) NOT NULL CHECK (montant_restant >= 0), date DATE, statut statut_dette NOT NULL DEFAULT 'en_cours');
+
+Remboursement: (id SERIAL PRIMARY KEY, dette_id INT NOT NULL REFERENCES dette(id) ON DELETE CASCADE, montant NUMERIC(12,2) NOT NULL CHECK (montant > 0), date DATE);
+
+Approvisionnement: (id SERIAL PRIMARY KEY, utilisateur_id  INT NOT NULL REFERENCES utilisateur(id), fournisseur_id  INT NOT NULL REFERENCES fournisseur(id), date DATE, montant_total   NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (montant_total >= 0), statut statut_approvisionnement NOT NULL DEFAULT 'en_attente');
+
+Ligne_approvisionnement ( id SERIAL PRIMARY KEY, approvisionnement_id INT NOT NULL REFERENCES approvisionnement(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite INT NOT NULL CHECK (quantite > 0), prix_unitaire NUMERIC(12,2) NOT NULL CHECK (prix_unitaire >= 0), sous_total NUMERIC(12,2) NOT NULL CHECK (sous_total >= 0));
+
+Inventaire: ( id SERIAL PRIMARY KEY, utilisateur_id  INT NOT NULL REFERENCES utilisateur(id), date DATE NOT NULL, statut statut_inventaire NOT NULL DEFAULT 'en_cours');
+
+Ligne_inventaire: ( id SERIAL PRIMARY KEY, INT NOT NULL REFERENCES inventaire(id) ON DELETE CASCADE, produit_id INT NOT NULL REFERENCES produit(id), quantite_theorique INT NOT NULL CHECK (quantite_theorique >= 0), quantite_reelle INT NOT NULL CHECK (quantite_reelle >= 0), ecart INT NOT NULL);
