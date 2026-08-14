@@ -1,0 +1,134 @@
+@startuml Diagramme de Use Case
+
+left to right direction
+skinparam shadowing false
+
+actor "Administrateur" as Admin
+actor "Chargé de Vente" as Vendeur
+actor "Chargé de Stock" as Stock
+actor "Inventaire" as Inv
+
+rectangle "StoreManager Pro" {
+    ' ADMINISTRATEUR
+
+    package "Administrateur" {
+        usecase "Se connecter" as A_Login
+        usecase "Consulter le tableau de bord" as A_Dashboard
+        usecase "Gérer les ventes" as A_Ventes
+        usecase "Créer une vente" as A_CreateSale
+        usecase "Ajouter un produit au panier" as A_AddProduct
+        usecase "Enregistrer le paiement" as A_Payment
+        usecase "Gérer les dettes" as A_Dettes
+        usecase "Consulter les dettes" as A_ViewDebt
+        usecase "Enregistrer un remboursement" as A_Repay
+        usecase "Gérer les approvisionnements" as A_Supply
+        usecase "Créer un approvisionnement" as A_CreateSupply
+        usecase "Réceptionner une livraison" as A_Receive
+        usecase "Gérer le catalogue" as A_Catalog
+        usecase "Gérer les produits" as A_Products
+        usecase "Gérer les clients" as A_Clients
+        usecase "Gérer les fournisseurs" as A_Suppliers
+        usecase "Consulter les stocks" as A_Stock
+        usecase "Consulter les statistiques" as A_Stats
+    }
+
+    ' CHARGÉ DE VENTE
+
+    package "Chargé de Vente" {
+        usecase "Se connecter" as V_Login
+        usecase "Consulter le tableau de bord" as V_Dashboard
+        usecase "Gérer les ventes" as V_Ventes
+        usecase "Créer une vente" as V_CreateSale
+        usecase "Ajouter un produit au panier" as V_AddProduct
+        usecase "Enregistrer le paiement" as V_Payment
+        usecase "Gérer les dettes" as V_Dettes
+        usecase "Consulter les dettes" as V_ViewDebt
+        usecase "Enregistrer un remboursement" as V_Repay
+        usecase "Consulter les statistiques" as V_Stats
+    }
+
+    ' CHARGÉ DE STOCK
+
+    package "Chargé de Stock" {
+        usecase "Se connecter" as S_Login
+        usecase "Consulter le tableau de bord" as S_Dashboard
+        usecase "Gérer les approvisionnements" as S_Supply
+        usecase "Créer un approvisionnement" as S_CreateSupply
+        usecase "Réceptionner une livraison" as S_Receive
+        usecase "Gérer le catalogue" as S_Catalog
+        usecase "Gérer les produits" as S_Products
+        usecase "Gérer les fournisseurs" as S_Suppliers
+        usecase "Consulter les stocks" as S_Stock
+    }
+
+    ' INVENTAIRE
+
+    package "Inventaire" {
+        usecase "Se connecter" as I_Login
+        usecase "Consulter le tableau de bord" as I_Dashboard
+        usecase "Consulter les produits" as I_Products
+        usecase "Consulter les stocks" as I_Stock
+        usecase "Consulter les statistiques" as I_Stats
+    }
+}
+
+' ADMINISTRATEUR
+
+Admin --> A_Login
+Admin --> A_Dashboard
+Admin --> A_Ventes
+Admin --> A_Dettes
+Admin --> A_Supply
+Admin --> A_Catalog
+Admin --> A_Stock
+Admin --> A_Stats
+
+A_Ventes ..> A_CreateSale : <<include>>
+A_CreateSale ..> A_AddProduct : <<include>>
+A_CreateSale ..> A_Payment : <<include>>
+
+A_Dettes ..> A_ViewDebt : <<include>>
+A_ViewDebt ..> A_Repay : <<extend>>
+
+A_Supply ..> A_CreateSupply : <<include>>
+A_CreateSupply ..> A_Receive : <<extend>>
+
+A_Catalog ..> A_Products : <<include>>
+A_Catalog ..> A_Clients : <<include>>
+A_Catalog ..> A_Suppliers : <<include>>
+
+' CHARGÉ DE VENTE
+
+Vendeur --> V_Login
+Vendeur --> V_Dashboard
+Vendeur --> V_Ventes
+Vendeur --> V_Dettes
+Vendeur --> V_Stats
+
+V_Ventes ..> V_CreateSale : <<include>>
+V_CreateSale ..> V_AddProduct : <<include>>
+V_CreateSale ..> V_Payment : <<include>>
+V_Dettes ..> V_ViewDebt : <<include>>
+V_ViewDebt ..> V_Repay : <<extend>>
+
+' CHARGÉ DE STOCK
+Stock --> S_Login
+Stock --> S_Dashboard
+Stock --> S_Supply
+Stock --> S_Catalog
+Stock --> S_Stock
+
+S_Supply ..> S_CreateSupply : <<include>>
+S_CreateSupply ..> S_Receive : <<extend>>
+S_Catalog ..> S_Products : <<include>>
+S_Catalog ..> S_Suppliers : <<include>>
+
+' INVENTAIRE
+
+Inv --> I_Login
+Inv --> I_Dashboard
+Inv --> I_Products
+Inv --> I_Stock
+Inv --> I_Stats
+
+@enduml
