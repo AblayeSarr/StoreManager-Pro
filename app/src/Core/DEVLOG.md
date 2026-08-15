@@ -1,3 +1,4 @@
+
 ## Phase 1 — Database Fallback
 
 ### Step 1.3 — Singleton Database & Fallback Automatique
