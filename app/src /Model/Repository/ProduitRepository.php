@@ -1,7 +1,6 @@
 <?php
 
-
-class ProduitRepository {
+class ProduitRepository{
     
     private PDO $pdo;
 

@@ -1,7 +1,7 @@
 <?php
 
-class FournisseurRepository {
-    
+class FournisseurRepository{
+
     private PDO $pdo;
 
     public function __construct()

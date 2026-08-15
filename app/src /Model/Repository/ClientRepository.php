@@ -1,13 +1,7 @@
 <?php
 
-namespace App\Model\Repository;
-
-use App\Core\Database;
-use App\Model\Entity\Client;
-use PDO;
-
-class ClientRepository
-{
+class ClientRepository{
+    
     private PDO $pdo;
 
     public function __construct()
