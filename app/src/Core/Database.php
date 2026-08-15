@@ -8,9 +8,9 @@ class Database{
         try {
             // Tentative de connexion PostgreSQL
             $this->pdo = new PDO(
-                "pgsql:host=localhost;dbname=bases;port=5432",
+                "pgsql:host=localhost;dbname=probase;port=5432",
                 "postgres",
-                "12345678"
+                "config295"
             );
             $this->pdo->setAttribute(
                 PDO::ATTR_DEFAULT_FETCH_MODE,
