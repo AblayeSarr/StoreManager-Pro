@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__DIR__, 2) . '/Service/DebtService.php';
-require_once dirname(__DIR__, 2) . '/Model/Repository/DetteRepository.php';
-require_once dirname(__DIR__, 2) . '/Core/Database.php';
+require_once dirname(__DIR__) . '/Service/DebtService.php';
+require_once dirname(__DIR__) . '/Model/Repository/DetteRepository.php';
+require_once dirname(__DIR__) . '/Core/Database.php';
 
 $debtService = new DebtService();
 $dettes = $debtService->getAllDettes();

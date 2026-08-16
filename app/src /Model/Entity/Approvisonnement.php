@@ -1,7 +1,7 @@
 <?php
 
 class Approvisionnement {
-    
+
     private ?int $id;
     private int $utilisateurId;
     private int $fournisseurId;
@@ -25,63 +25,51 @@ class Approvisionnement {
         $this->statut = $statut;
     }
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int{
         return $this->id;
     }
 
-    public function setId(?int $id): void
-    {
+    public function setId(?int $id): void{
         $this->id = $id;
     }
 
-    public function getUtilisateurId(): int
-    {
+    public function getUtilisateurId(): int{
         return $this->utilisateurId;
     }
 
-    public function setUtilisateurId(int $utilisateurId): void
-    {
+    public function setUtilisateurId(int $utilisateurId): void{
         $this->utilisateurId = $utilisateurId;
     }
 
-    public function getFournisseurId(): int
-    {
+    public function getFournisseurId(): int{
         return $this->fournisseurId;
     }
 
-    public function setFournisseurId(int $fournisseurId): void
-    {
+    public function setFournisseurId(int $fournisseurId): void{
         $this->fournisseurId = $fournisseurId;
     }
 
-    public function getDate(): ?DateTimeInterface
-    {
+    public function getDate(): ?DateTimeInterface{
         return $this->date;
     }
 
-    public function setDate(?DateTimeInterface $date): void
-    {
+    public function setDate(?DateTimeInterface $date): void{
         $this->date = $date;
     }
 
-    public function getMontantTotal(): float
-    {
+    public function getMontantTotal(): float{
         return $this->montantTotal;
     }
 
-    public function setMontantTotal(float $montantTotal): void
-    {
+    public function setMontantTotal(float $montantTotal): void{
         $this->montantTotal = $montantTotal;
     }
 
-    public function getStatut(): string
-    {
+    public function getStatut(): string{
         return $this->statut;
     }
 
-    public function setStatut(string $statut): void
-    {
+    public function setStatut(string $statut): void{
         $this->statut = $statut;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__, 2) . '/Core/Database.php';
+require_once dirname(__DIR__) . '/Core/Database.php';
 require_once dirname(__DIR__) . '/Entity/Produit.php';
 
 class ProduitRepository

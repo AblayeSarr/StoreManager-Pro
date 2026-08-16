@@ -1,17 +1,16 @@
 <?php
 
-class POSController
-{
-    private VenteService $venteService;
+class POSController{
 
-    public function __construct()
-    {
+    private VenteService
+     $venteService;
+
+    public function __construct(){
         $this->venteService = new VenteService();
     }
 
     // Affiche la page de caisse.
-    public function index(): void
-    {
+    public function index(): void{
         // Récupération du panier depuis la session
         $panier = $_SESSION['panier'] ?? [];
 
@@ -23,15 +22,12 @@ class POSController
     }
 
     // Ajoute un produit au panier.
-    public function ajouterAuPanier(): void
-    {
+    public function ajouterAuPanier(): void{
         $produitId = (int) ($_POST['produit_id'] ?? 0);
         $quantite = (int) ($_POST['quantite'] ?? 0);
         $prixUnitaire = (float) ($_POST['prix_unitaire'] ?? 0);
-
         // Initialise le panier s'il n'existe pas
         $_SESSION['panier'] ??= [];
-
         // Ajout du produit au panier
         $this->venteService->ajouterAuPanier(
             $_SESSION['panier'],
@@ -39,15 +35,13 @@ class POSController
             $quantite,
             $prixUnitaire
         );
-
         // Retour à la caisse
         header('Location: /pos');
         exit;
     }
 
     // Valide et enregistre la vente.
-    public function validerVente(): void
-    {
+    public function validerVente(): void{
         $utilisateurId = (int) ($_POST['utilisateur_id'] ?? 0);
         $clientId = (int) ($_POST['client_id'] ?? 0);
 
@@ -60,10 +54,8 @@ class POSController
             $clientId,
             $panier
         );
-
         // Suppression du panier après validation
         unset($_SESSION['panier']);
-
         // Retour à la caisse
         header('Location: /pos');
         exit;

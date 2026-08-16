@@ -1,40 +1,32 @@
 <?php
 
-require_once dirname(__DIR__, 2) . '/Core/Database.php';
+require_once dirname(__DIR__) . '/Core/Database.php';
 require_once dirname(__DIR__) . '/Entity/Fournisseur.php';
 
 class FournisseurRepository
 {
     private PDO $pdo;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->pdo = Database::getInstance()->pdo;
     }
 
-    public function getAllFournisseur(): array
-    {
+    public function getAllFournisseur(): array{
         $stmt = $this->pdo->prepare(
             "SELECT * FROM fournisseur ORDER BY id DESC"
         );
-
         $stmt->execute();
-
         return $stmt->fetchAll();
     }
 
-    public function getAllFournisseurById(int $id): ?array
-    {
+    public function getAllFournisseurById(int $id): ?array{
         $stmt = $this->pdo->prepare(
             "SELECT * FROM fournisseur WHERE id = :id"
         );
-
         $stmt->execute([
             'id' => $id
         ]);
-
         $fournisseur = $stmt->fetch();
-
         return $fournisseur ?: null;
     }
 
