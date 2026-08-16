@@ -1,4 +1,4 @@
-## PHASE 3 : DIMANCHE — Dettes, Approvisionnements, Rôles & Clôture
+## PHASE 3 : Dettes, Approvisionnements, Rôles & Clôture
 
 ### Step 3.1 : Gestion des Dettes & Remboursements
 

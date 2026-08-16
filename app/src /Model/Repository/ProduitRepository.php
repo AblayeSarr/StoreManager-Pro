@@ -1,18 +1,21 @@
 <?php
 
-class ProduitRepository{
-    
+require_once dirname(__DIR__, 2) . '/Core/Database.php';
+require_once dirname(__DIR__) . '/Entity/Produit.php';
+
+class ProduitRepository
+{
     private PDO $pdo;
 
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = Database::getInstance()->pdo;
     }
 
-    public function findAll(): array
+    public function getAllProduit(): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM produits ORDER BY id DESC"
+            "SELECT * FROM produit ORDER BY id DESC"
         );
 
         $stmt->execute();
@@ -20,10 +23,10 @@ class ProduitRepository{
         return $stmt->fetchAll();
     }
 
-    public function findById(int $id): ?array
+    public function getAllProduitById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM produits WHERE id = :id"
+            "SELECT * FROM produit WHERE id = :id"
         );
 
         $stmt->execute([
@@ -38,7 +41,7 @@ class ProduitRepository{
     public function create(Produit $produit): bool
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO produits
+            "INSERT INTO produit
             (nom, description, categorie, prix, seuil_alerte)
             VALUES
             (:nom, :description, :categorie, :prix, :seuil_alerte)"
@@ -56,7 +59,7 @@ class ProduitRepository{
     public function update(Produit $produit): bool
     {
         $stmt = $this->pdo->prepare(
-            "UPDATE produits
+            "UPDATE produit
             SET nom = :nom,
                 description = :description,
                 categorie = :categorie,
@@ -78,7 +81,7 @@ class ProduitRepository{
     public function delete(int $id): bool
     {
         $stmt = $this->pdo->prepare(
-            "DELETE FROM produits WHERE id = :id"
+            "DELETE FROM produit WHERE id = :id"
         );
 
         return $stmt->execute([

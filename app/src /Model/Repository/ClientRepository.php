@@ -1,18 +1,18 @@
 <?php
-
-class ClientRepository{
-    
+require_once dirname(__DIR__, 2) . '/Core/Database.php';
+class ClientRepository
+{
     private PDO $pdo;
 
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = Database::getInstance()->pdo;
     }
 
-    public function findAll(): array
+    public function getAllClient(): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM clients ORDER BY id DESC"
+            "SELECT * FROM client ORDER BY id DESC"
         );
 
         $stmt->execute();
@@ -20,10 +20,10 @@ class ClientRepository{
         return $stmt->fetchAll();
     }
 
-    public function findById(int $id): ?array
+    public function getAllClientById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM clients WHERE id = :id"
+            "SELECT * FROM client WHERE id = :id"
         );
 
         $stmt->execute([
@@ -38,7 +38,7 @@ class ClientRepository{
     public function create(Client $client): bool
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO clients
+            "INSERT INTO client
             (nom, prenom, telephone, email, adresse)
             VALUES
             (:nom, :prenom, :telephone, :email, :adresse)"
@@ -56,13 +56,13 @@ class ClientRepository{
     public function update(Client $client): bool
     {
         $stmt = $this->pdo->prepare(
-            "UPDATE clients
-            SET nom = :nom,
-                prenom = :prenom,
-                telephone = :telephone,
-                email = :email,
-                adresse = :adresse
-            WHERE id = :id"
+            "UPDATE client
+             SET nom = :nom,
+                 prenom = :prenom,
+                 telephone = :telephone,
+                 email = :email,
+                 adresse = :adresse
+             WHERE id = :id"
         );
 
         return $stmt->execute([
@@ -78,7 +78,7 @@ class ClientRepository{
     public function delete(int $id): bool
     {
         $stmt = $this->pdo->prepare(
-            "DELETE FROM clients WHERE id = :id"
+            "DELETE FROM client WHERE id = :id"
         );
 
         return $stmt->execute([

@@ -1,31 +1,33 @@
 <?php
 
-require_once __DIR__ . '/Repository/DetteRepository.php';
-
-class DebtService{
-
+class DebtService
+{
     private DetteRepository $detteRepository;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->detteRepository = new DetteRepository();
     }
 
-    public function getAllDettes(): array{
-
+    public function getAllDettes(): array
+    {
         return $this->detteRepository->getAllDettes();
     }
 
-    public function getDetteById(int $id): ?array {
-
+    public function getDetteById(int $id): ?array
+    {
         return $this->detteRepository->getId($id);
     }
 
-    public function getDettesByClientId(int $clientId): array{
-
+    public function getDettesByClientId(int $clientId): array
+    {
         return $this->detteRepository->getClientById($clientId);
     }
 
-    public function rembourser(int $detteId, float $montant): bool{
+    public function rembourser(
+        int $detteId,
+        float $montant
+    ): bool {
         // 1. Récupérer la dette
         $dette = $this->detteRepository->getId($detteId);
 
@@ -35,7 +37,9 @@ class DebtService{
 
         // 2. Vérifier que le montant est positif
         if ($montant <= 0) {
-            throw new Exception("Le montant du remboursement doit être supérieur à 0.");
+            throw new Exception(
+                "Le montant du remboursement doit être supérieur à 0."
+            );
         }
 
         // 3. Vérifier que le remboursement ne dépasse pas la dette
@@ -46,7 +50,8 @@ class DebtService{
         }
 
         // 4. Calculer le nouveau montant restant
-        $nouveauMontantRestant = $dette['montant_restant'] - $montant;
+        $nouveauMontantRestant =
+            $dette['montant_restant'] - $montant;
 
         // 5. Déterminer le nouveau statut
         if ($nouveauMontantRestant == 0) {
@@ -69,7 +74,11 @@ class DebtService{
         );
     }
 
-    public function getRemboursements(int $detteId): array{
-        return $this->detteRepository->getRemboursements($detteId);
+    public function getRemboursements(
+        int $detteId
+    ): array {
+        return $this->detteRepository->getRemboursements(
+            $detteId
+        );
     }
 }

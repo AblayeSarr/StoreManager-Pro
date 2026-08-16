@@ -1,30 +1,33 @@
 <?php
 
-class POSController{
-
+class POSController
+{
     private VenteService $venteService;
-    public function __construct(){
+
+    public function __construct()
+    {
         $this->venteService = new VenteService();
     }
 
-     //Affiche la page de caisse.
-    
-    public function index(): void{
+    // Affiche la page de caisse.
+    public function index(): void
+    {
         // Récupération du panier depuis la session
         $panier = $_SESSION['panier'] ?? [];
+
         // Récupération des produits depuis la base de données
         $produits = $this->venteService->getProduits();
+
         // Chargement de la vue POS
         require dirname(__DIR__, 2) . '/views/pos/index.php';
     }
 
-     //Ajoute un produit au panier.
-    
-    public function ajouterAuPanier(): void{
-
-        $produitId = (int) $_POST['produit_id'];
-        $quantite = (int) $_POST['quantite'];
-        $prixUnitaire = (float) $_POST['prix_unitaire'];
+    // Ajoute un produit au panier.
+    public function ajouterAuPanier(): void
+    {
+        $produitId = (int) ($_POST['produit_id'] ?? 0);
+        $quantite = (int) ($_POST['quantite'] ?? 0);
+        $prixUnitaire = (float) ($_POST['prix_unitaire'] ?? 0);
 
         // Initialise le panier s'il n'existe pas
         $_SESSION['panier'] ??= [];
@@ -36,27 +39,31 @@ class POSController{
             $quantite,
             $prixUnitaire
         );
+
         // Retour à la caisse
         header('Location: /pos');
         exit;
     }
 
-    //Valide et enregistre la vente.
+    // Valide et enregistre la vente.
+    public function validerVente(): void
+    {
+        $utilisateurId = (int) ($_POST['utilisateur_id'] ?? 0);
+        $clientId = (int) ($_POST['client_id'] ?? 0);
 
-    public function validerVente(): void{
-
-        $utilisateurId = (int) $_POST['utilisateur_id'];
-        $clientId = (int) $_POST['client_id'];
         // Récupération du panier
         $panier = $_SESSION['panier'] ?? [];
+
         // Enregistrement de la vente
-        $venteId = $this->venteService->enregistrerVente(
+        $this->venteService->enregistrerVente(
             $utilisateurId,
             $clientId,
             $panier
         );
+
         // Suppression du panier après validation
         unset($_SESSION['panier']);
+
         // Retour à la caisse
         header('Location: /pos');
         exit;

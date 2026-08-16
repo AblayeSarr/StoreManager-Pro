@@ -1,18 +1,34 @@
 <?php
 
-class VenteService{
+require_once dirname(__DIR__) . '/Core/Database.php';
 
+class VenteService
+{
     private PDO $pdo;
-    public function __construct(){
+
+    public function __construct()
+    {
         $this->pdo = Database::getInstance()->pdo;
     }
-    // Ajoute un produit au panier.
+
     public function ajouterAuPanier(
         array &$panier,
         int $produitId,
         int $quantite,
         float $prixUnitaire
     ): void {
+        if ($quantite <= 0) {
+            throw new InvalidArgumentException(
+                "La quantité doit être supérieure à 0."
+            );
+        }
+
+        if ($prixUnitaire < 0) {
+            throw new InvalidArgumentException(
+                "Le prix ne peut pas être négatif."
+            );
+        }
+
         if (isset($panier[$produitId])) {
             $panier[$produitId]['quantite'] += $quantite;
 
@@ -27,7 +43,7 @@ class VenteService{
             ];
         }
     }
-    // Calcule le montant total du panier.
+
     public function calculerTotal(array $panier): float
     {
         $total = 0;
@@ -39,32 +55,33 @@ class VenteService{
         return $total;
     }
 
-    // Récupère tous les produits pour la caisse.
     public function getProduits(): array
     {
         $stmt = $this->pdo->query(
             "SELECT id, nom, description, categorie, prix
-             FROM produits
+             FROM produit
              ORDER BY nom ASC"
         );
 
         return $stmt->fetchAll();
     }
 
-    // Enregistre une vente avec ses lignes
-    // et décrémente le stock dans une transaction.
     public function enregistrerVente(
         int $utilisateurId,
         int $clientId,
         array $panier
     ): int {
-        $total = $this->calculerTotal($panier);
-        $this->pdo->beginTransaction();
-        try {
+        if (empty($panier)) {
+            throw new Exception("Le panier est vide.");
+        }
 
-            // Création de la vente
+        $total = $this->calculerTotal($panier);
+
+        $this->pdo->beginTransaction();
+
+        try {
             $stmt = $this->pdo->prepare(
-                "INSERT INTO ventes
+                "INSERT INTO vente
                 (
                     utilisateur_id,
                     client_id,
@@ -77,7 +94,8 @@ class VenteService{
                     :client_id,
                     :montant_total,
                     'en_cours'
-                )"
+                )
+                RETURNING id"
             );
 
             $stmt->execute([
@@ -86,13 +104,13 @@ class VenteService{
                 'montant_total' => $total
             ]);
 
-            $venteId = (int) $this->pdo->lastInsertId();
+            $venteId = (int) $stmt->fetchColumn();
 
             foreach ($panier as $ligne) {
-                // Vérification du stock
+
                 $stmt = $this->pdo->prepare(
                     "SELECT quantite_disponible
-                     FROM stocks
+                     FROM stock
                      WHERE produit_id = :produit_id"
                 );
 
@@ -101,15 +119,20 @@ class VenteService{
                 ]);
 
                 $stock = $stmt->fetch();
+
                 if (!$stock) {
                     throw new Exception("Stock introuvable.");
                 }
-                if ($stock['quantite_disponible'] < $ligne['quantite']) {
+
+                if (
+                    $stock['quantite_disponible']
+                    < $ligne['quantite']
+                ) {
                     throw new Exception("Stock insuffisant.");
                 }
-                // Création de la ligne de vente
+
                 $stmt = $this->pdo->prepare(
-                    "INSERT INTO ligne_ventes
+                    "INSERT INTO ligne_vente
                     (
                         vente_id,
                         produit_id,
@@ -135,23 +158,30 @@ class VenteService{
                     'sous_total' => $ligne['sous_total']
                 ]);
 
-                // Décrémentation du stock
                 $stmt = $this->pdo->prepare(
-                    "UPDATE stocks
+                    "UPDATE stock
                      SET quantite_disponible =
                          quantite_disponible - :quantite,
-                         date_mise_a_jour = CURRENT_DATE
+                         date_mise_a_jour = CURRENT_TIMESTAMP
                      WHERE produit_id = :produit_id"
                 );
+
                 $stmt->execute([
                     'quantite' => $ligne['quantite'],
                     'produit_id' => $ligne['produit_id']
                 ]);
             }
+
             $this->pdo->commit();
+
             return $venteId;
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
+
+        } catch (Throwable $e) {
+
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
             throw $e;
         }
     }

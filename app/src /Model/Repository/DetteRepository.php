@@ -1,17 +1,19 @@
 <?php
 
-require_once __DIR__ . '/Core/Database.php';
+require_once dirname(__DIR__, 2) . '/Core/Database.php';
 
-class DetteRepository {
-    
+class DetteRepository
+{
     private PDO $pdo;
 
     public function __construct()
     {
-        $database = new Database();
-        $this->pdo = $database->pdo;
+        $this->pdo = Database::getInstance()->pdo;
     }
 
+    /**
+     * Récupère toutes les dettes avec les informations du client.
+     */
     public function getAllDettes(): array
     {
         $sql = "
@@ -26,8 +28,8 @@ class DetteRepository {
                 c.nom,
                 c.prenom,
                 c.telephone
-            FROM dettes d
-            INNER JOIN clients c ON c.id = d.client_id
+            FROM dette d
+            INNER JOIN client c ON c.id = d.client_id
             ORDER BY d.date DESC
         ";
 
@@ -36,7 +38,10 @@ class DetteRepository {
         return $stmt->fetchAll();
     }
 
-    public function getId(int $id): ?array
+    /**
+     * Récupère une dette par son ID.
+     */
+    public function getDetteId(int $id): ?array
     {
         $sql = "
             SELECT
@@ -44,12 +49,13 @@ class DetteRepository {
                 c.nom,
                 c.prenom,
                 c.telephone
-            FROM dettes d
-            INNER JOIN clients c ON c.id = d.client_id
+            FROM dette d
+            INNER JOIN client c ON c.id = d.client_id
             WHERE d.id = :id
         ";
 
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([
             'id' => $id
         ]);
@@ -59,16 +65,20 @@ class DetteRepository {
         return $dette ?: null;
     }
 
-    public function getClientById(int $clientId): array
+    /**
+     * Récupère les dettes d'un client.
+     */
+    public function getClientDetteById(int $clientId): array
     {
         $sql = "
             SELECT *
-            FROM dettes
+            FROM dette
             WHERE client_id = :client_id
             ORDER BY date DESC
         ";
 
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([
             'client_id' => $clientId
         ]);
@@ -76,13 +86,16 @@ class DetteRepository {
         return $stmt->fetchAll();
     }
 
+    /**
+     * Crée une nouvelle dette.
+     */
     public function create(
         int $venteId,
         int $clientId,
         float $montant
     ): int {
         $sql = "
-            INSERT INTO dettes (
+            INSERT INTO dette (
                 vente_id,
                 client_id,
                 montant,
@@ -96,7 +109,6 @@ class DetteRepository {
                 :montant_restant,
                 'en_cours'
             )
-            RETURNING id
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -108,15 +120,18 @@ class DetteRepository {
             'montant_restant' => $montant
         ]);
 
-        return (int) $stmt->fetchColumn();
+        return (int) $this->pdo->lastInsertId();
     }
 
+    /**
+     * Enregistre un remboursement.
+     */
     public function addRemboursement(
         int $detteId,
         float $montant
     ): int {
         $sql = "
-            INSERT INTO remboursements (
+            INSERT INTO remboursement (
                 dette_id,
                 montant
             )
@@ -124,7 +139,6 @@ class DetteRepository {
                 :dette_id,
                 :montant
             )
-            RETURNING id
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -134,16 +148,19 @@ class DetteRepository {
             'montant' => $montant
         ]);
 
-        return (int) $stmt->fetchColumn();
+        return (int) $this->pdo->lastInsertId();
     }
 
+    /**
+     * Met à jour le montant restant et le statut.
+     */
     public function updateMontantRestant(
         int $detteId,
         float $montantRestant,
         string $statut
     ): bool {
         $sql = "
-            UPDATE dettes
+            UPDATE dette
             SET
                 montant_restant = :montant_restant,
                 statut = :statut
@@ -159,11 +176,14 @@ class DetteRepository {
         ]);
     }
 
-    public function getRemboursements(int $detteId): array
+    /**
+     * Récupère tous les remboursements d'une dette.
+     */
+    public function getAllRemboursements(int $detteId): array
     {
         $sql = "
             SELECT *
-            FROM remboursements
+            FROM remboursement
             WHERE dette_id = :dette_id
             ORDER BY date DESC
         ";

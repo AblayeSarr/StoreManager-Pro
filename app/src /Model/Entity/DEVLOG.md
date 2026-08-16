@@ -1,6 +1,6 @@
 
-## PHASE 2 : SAMEDI — Cœur POO & Ventes POS
-### Step 2.1 (09h00 - 11h00) : Entités POO Pure
+## PHASE 2 : Cœur POO & Ventes POS
+### Step 2.1  Entités POO Pure
 
 
 Cette étape consiste à transformer les principales tables de la base de données en classes PHP afin de commencer la conception orientée objet du projet.

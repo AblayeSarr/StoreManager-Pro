@@ -1,18 +1,21 @@
 <?php
 
-class FournisseurRepository{
+require_once dirname(__DIR__, 2) . '/Core/Database.php';
+require_once dirname(__DIR__) . '/Entity/Fournisseur.php';
 
+class FournisseurRepository
+{
     private PDO $pdo;
 
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = Database::getInstance()->pdo;
     }
 
-    public function findAll(): array
+    public function getAllFournisseur(): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM fournisseurs ORDER BY id DESC"
+            "SELECT * FROM fournisseur ORDER BY id DESC"
         );
 
         $stmt->execute();
@@ -20,10 +23,10 @@ class FournisseurRepository{
         return $stmt->fetchAll();
     }
 
-    public function findById(int $id): ?array
+    public function getAllFournisseurById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT * FROM fournisseurs WHERE id = :id"
+            "SELECT * FROM fournisseur WHERE id = :id"
         );
 
         $stmt->execute([
@@ -38,7 +41,7 @@ class FournisseurRepository{
     public function create(Fournisseur $fournisseur): bool
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO fournisseurs
+            "INSERT INTO fournisseur
             (nom, telephone, email, adresse)
             VALUES
             (:nom, :telephone, :email, :adresse)"
@@ -55,12 +58,12 @@ class FournisseurRepository{
     public function update(Fournisseur $fournisseur): bool
     {
         $stmt = $this->pdo->prepare(
-            "UPDATE fournisseurs
-            SET nom = :nom,
-                telephone = :telephone,
-                email = :email,
-                adresse = :adresse
-            WHERE id = :id"
+            "UPDATE fournisseur
+             SET nom = :nom,
+                 telephone = :telephone,
+                 email = :email,
+                 adresse = :adresse
+             WHERE id = :id"
         );
 
         return $stmt->execute([
@@ -75,7 +78,8 @@ class FournisseurRepository{
     public function delete(int $id): bool
     {
         $stmt = $this->pdo->prepare(
-            "DELETE FROM fournisseurs WHERE id = :id"
+            "DELETE FROM fournisseur
+             WHERE id = :id"
         );
 
         return $stmt->execute([

@@ -1,4 +1,4 @@
-## PHASE 2 : SAMEDI — Repositories & Interface POS
+## PHASE 2 : Repositories & Interface POS
 
 ### Step 2.1 : Création des Repositories
 
