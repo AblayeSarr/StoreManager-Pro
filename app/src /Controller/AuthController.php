@@ -10,7 +10,7 @@ class AuthController{
 
     public function showLogin(): void{
         $error = null;
-        require dirname(__DIR__, 2) . '/views/auth/login.php';
+        require dirname(__DIR__) . '/views/auth/login.php';
     }
 
     public function login(): void{
@@ -22,7 +22,7 @@ class AuthController{
             exit;
         }
         $error = "Email ou mot de passe incorrect.";
-        require dirname(__DIR__, 2) . '/views/auth/login.php';
+        require dirname(__DIR__) . '/views/auth/login.php';
     }
 
     public function logout(): void{

@@ -18,7 +18,7 @@ class POSController{
         $produits = $this->venteService->getProduits();
 
         // Chargement de la vue POS
-        require dirname(__DIR__, 2) . '/views/pos/index.php';
+        require dirname(__DIR__) . '/views/pos/index.php';
     }
 
     // Ajoute un produit au panier.
