@@ -3,10 +3,9 @@
 require_once dirname(__DIR__) . '/Core/Database.php';
 require_once dirname(__DIR__) . '/Entity/Fournisseur.php';
 
-class FournisseurRepository
-{
-    private PDO $pdo;
+class FournisseurRepository{
 
+    private PDO $pdo;
     public function __construct(){
         $this->pdo = Database::getInstance()->pdo;
     }
@@ -30,8 +29,7 @@ class FournisseurRepository
         return $fournisseur ?: null;
     }
 
-    public function create(Fournisseur $fournisseur): bool
-    {
+    public function create(Fournisseur $fournisseur): bool{
         $stmt = $this->pdo->prepare(
             "INSERT INTO fournisseur
             (nom, telephone, email, adresse)
@@ -47,8 +45,7 @@ class FournisseurRepository
         ]);
     }
 
-    public function update(Fournisseur $fournisseur): bool
-    {
+    public function update(Fournisseur $fournisseur): bool{
         $stmt = $this->pdo->prepare(
             "UPDATE fournisseur
              SET nom = :nom,
@@ -57,7 +54,6 @@ class FournisseurRepository
                  adresse = :adresse
              WHERE id = :id"
         );
-
         return $stmt->execute([
             'id' => $fournisseur->getId(),
             'nom' => $fournisseur->getNom(),
@@ -67,13 +63,11 @@ class FournisseurRepository
         ]);
     }
 
-    public function delete(int $id): bool
-    {
+    public function delete(int $id): bool{
         $stmt = $this->pdo->prepare(
             "DELETE FROM fournisseur
              WHERE id = :id"
         );
-
         return $stmt->execute([
             'id' => $id
         ]);

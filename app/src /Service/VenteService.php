@@ -2,12 +2,11 @@
 
 require_once dirname(__DIR__) . '/Core/Database.php';
 
-class VenteService
-{
+class VenteService{
+
     private PDO $pdo;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->pdo = Database::getInstance()->pdo;
     }
 
@@ -22,13 +21,11 @@ class VenteService
                 "La quantité doit être supérieure à 0."
             );
         }
-
         if ($prixUnitaire < 0) {
             throw new InvalidArgumentException(
                 "Le prix ne peut pas être négatif."
             );
         }
-
         if (isset($panier[$produitId])) {
             $panier[$produitId]['quantite'] += $quantite;
 
@@ -44,25 +41,20 @@ class VenteService
         }
     }
 
-    public function calculerTotal(array $panier): float
-    {
+    public function calculerTotal(array $panier): float{
         $total = 0;
-
         foreach ($panier as $ligne) {
             $total += $ligne['sous_total'];
         }
-
         return $total;
     }
 
-    public function getProduits(): array
-    {
+    public function getProduits(): array{
         $stmt = $this->pdo->query(
             "SELECT id, nom, description, categorie, prix
              FROM produit
              ORDER BY nom ASC"
         );
-
         return $stmt->fetchAll();
     }
 
@@ -74,11 +66,8 @@ class VenteService
         if (empty($panier)) {
             throw new Exception("Le panier est vide.");
         }
-
         $total = $this->calculerTotal($panier);
-
         $this->pdo->beginTransaction();
-
         try {
             $stmt = $this->pdo->prepare(
                 "INSERT INTO vente
@@ -97,7 +86,6 @@ class VenteService
                 )
                 RETURNING id"
             );
-
             $stmt->execute([
                 'utilisateur_id' => $utilisateurId,
                 'client_id' => $clientId,
@@ -105,7 +93,6 @@ class VenteService
             ]);
 
             $venteId = (int) $stmt->fetchColumn();
-
             foreach ($panier as $ligne) {
 
                 $stmt = $this->pdo->prepare(
@@ -113,17 +100,14 @@ class VenteService
                      FROM stock
                      WHERE produit_id = :produit_id"
                 );
-
                 $stmt->execute([
                     'produit_id' => $ligne['produit_id']
                 ]);
-
                 $stock = $stmt->fetch();
 
                 if (!$stock) {
                     throw new Exception("Stock introuvable.");
                 }
-
                 if (
                     $stock['quantite_disponible']
                     < $ligne['quantite']
@@ -173,15 +157,11 @@ class VenteService
             }
 
             $this->pdo->commit();
-
             return $venteId;
-
         } catch (Throwable $e) {
-
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
             }
-
             throw $e;
         }
     }
