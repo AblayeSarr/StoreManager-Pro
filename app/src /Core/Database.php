@@ -22,7 +22,7 @@ class Database{
             );
         } catch (PDOException $ex) {
             // Fallback automatique vers SQLite
-            $sqlitePath = dirname(__DIR__, 2) . '/erp.db';
+            $sqlitePath = dirname(__DIR__) . '/erp.db';
             $this->pdo = new PDO(
                 "sqlite:" . $sqlitePath
             );
